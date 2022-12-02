@@ -23,11 +23,11 @@ class FutureProviderPage extends ConsumerWidget {
   const FutureProviderPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var _liste =
+    var liste =
         ref.watch(catFactsProvider(const {"limit": 4, "max_length": 30}));
     return Scaffold(
       body: SafeArea(
-        child: _liste.when(
+        child: liste.when(
             data: (liste) {
               return ListView.builder(
                 itemCount: liste.length,
@@ -36,7 +36,7 @@ class FutureProviderPage extends ConsumerWidget {
                     title: Text(liste[index].fact),
                     leading: Text(
                       liste[index].length.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                           backgroundColor: Colors.indigo,
                           color: Colors.white,
                           fontSize: 32),
