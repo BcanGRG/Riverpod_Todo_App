@@ -3,15 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_todo_app/providers/all_providers.dart';
 
 class ToolBarWidget extends ConsumerWidget {
-  const ToolBarWidget({super.key});
+  ToolBarWidget({super.key});
+  var _currentFilter = TodoListFilter.all;
+
+  Color changeTextColor(TodoListFilter filter) {
+    return _currentFilter == filter ? Colors.orange : Colors.black;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    int onCompletedTodoCount = ref
-        .watch(todoListProvider)
-        .where((element) => !element.completed)
-        .length;
-
+    final onCompletedTodoCount = ref.watch(unCompletedTodoCount);
+    _currentFilter = ref.watch(todoListFilter);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -19,20 +21,39 @@ class ToolBarWidget extends ConsumerWidget {
             child: Text(
           onCompletedTodoCount == 0
               ? "Tüm görevler tamamlandı"
-              : "${ref.watch(unCompletedTodoCount)} görev tamamlanmadı",
+              : "$onCompletedTodoCount görev tamamlanmadı",
           overflow: TextOverflow.ellipsis,
         )),
         Tooltip(
           message: "All Todos",
-          child: TextButton(onPressed: () {}, child: Text("All")),
+          child: TextButton(
+              style: TextButton.styleFrom(
+                  foregroundColor: changeTextColor(TodoListFilter.all)),
+              onPressed: () {
+                ref.read(todoListFilter.notifier).state = TodoListFilter.all;
+              },
+              child: Text("All")),
         ),
         Tooltip(
           message: "Only Uncompleted Todos",
-          child: TextButton(onPressed: () {}, child: Text("Active")),
+          child: TextButton(
+              style: TextButton.styleFrom(
+                  foregroundColor: changeTextColor(TodoListFilter.active)),
+              onPressed: () {
+                ref.read(todoListFilter.notifier).state = TodoListFilter.active;
+              },
+              child: Text("Active")),
         ),
         Tooltip(
           message: "Only Completed Todos",
-          child: TextButton(onPressed: () {}, child: Text("Complete")),
+          child: TextButton(
+              style: TextButton.styleFrom(
+                  foregroundColor: changeTextColor(TodoListFilter.completed)),
+              onPressed: () {
+                ref.read(todoListFilter.notifier).state =
+                    TodoListFilter.completed;
+              },
+              child: Text("Complete")),
         )
       ],
     );
